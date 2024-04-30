@@ -1,6 +1,6 @@
 # Blazor ve Bootstrap ile form uygulaması.
 
-Dinamik bir şekilde ekleme, güncelleme ve silme işlemleri.
+Dinamik bir şekilde ekleme, güncelleme ve silme işlemleri. Sayfa başlığı, url ve sayfa içeriği dinamik olarak güncelleniyor.
 Blazor'a alışma kapsamında hazırlandı.  
 Julio Casal'ın Blazor kursu kaynak olarak kullanıldı.
 
