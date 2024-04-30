@@ -1,0 +1,98 @@
+﻿using GameStore.Frontend.Models;
+
+namespace GameStore.Frontend.Clients;
+
+public class GamesClient
+{
+    private readonly List<GameSummary> games =
+        [
+            new(){
+            Id = 1,
+            Name = "Street Fighter II",
+            Genre = "Fighting",
+            Price = 19.99M,
+            ReleaseDate = new DateOnly(1992, 11, 1)
+            },
+            new(){
+            Id = 2,
+            Name = "Final Fansasy XIV",
+            Genre = "Roleplaying",
+            Price = 49.99M,
+            ReleaseDate = new DateOnly(2010, 9, 30)
+            },
+            new(){
+            Id = 3,
+            Name = "FIFA 23",
+            Genre = "Sports",
+            Price = 69.99M,
+            ReleaseDate = new DateOnly(2022, 8, 5)
+            },
+        ];
+
+    public GameSummary[] GetGames() => [.. games]; // Listemize erisimi engellemek icin private yaptik. Ancak erismek istersek public bir array olusturduk.
+
+    private readonly Genre[] genres = new GenreClients().GetGenres();
+    public void AddGames(GameDetails game)
+    {
+        Genre genre = GetGenreById(game.GenreId);
+
+        var gameSummary = new GameSummary
+        {
+            Id = games.Count + 1,
+            Name = game.Name,
+            Genre = genre.Name,
+            Price = game.Price,
+            ReleaseDate = game.ReleaseDate
+        };
+
+        games.Add(gameSummary);
+    }
+
+
+
+    public GameDetails GetGame(int id)
+    {
+        GameSummary game = GetGameSummaryById(id);
+
+        var genre = genres.Single(genre => string.Equals(genre.Name, game.Genre, StringComparison.OrdinalIgnoreCase));
+
+        return new GameDetails
+        {
+            Id = game.Id,
+            Name = game.Name,
+            GenreId = genre.Id.ToString(),
+            Price = game.Price,
+            ReleaseDate = game.ReleaseDate
+        };
+    }
+
+    public void UpdateGame(GameDetails updatedGame)
+    {
+        var genre = GetGenreById(updatedGame.GenreId);
+        GameSummary existingGame = GetGameSummaryById(updatedGame.Id);
+
+        existingGame.Name = updatedGame.Name;
+        existingGame.Genre = genre.Name;
+        existingGame.Price = updatedGame.Price;
+        existingGame.ReleaseDate = updatedGame.ReleaseDate;
+    }
+
+    public void DeleteGame(int id)
+    {
+        var game = GetGameSummaryById(id);
+        games.Remove(game);
+    }
+
+    private GameSummary GetGameSummaryById(int id)
+    {
+        GameSummary? game = games.Find(game => game.Id == id);
+        ArgumentNullException.ThrowIfNull(game);
+        return game;
+    }
+
+    private Genre GetGenreById(string? id)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(id);
+        return genres.Single(genre => genre.Id == int.Parse(id));
+    }
+}
